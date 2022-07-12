@@ -1,7 +1,8 @@
-import imp
 from django.shortcuts import render
-from django.http import HttpResponse, HttpResponseNotFound, HttpResponseRedirect
+from django.http import Http404, HttpResponseNotFound, HttpResponseRedirect
 from django.urls import reverse
+from django.template.loader import render_to_string
+
 # Create your views here.
 
 months = {
@@ -16,19 +17,17 @@ months = {
     "september": "Watch one tedtalk every day",
     "october": "wake up early every day",
     "november": "do skin routin every day ",
-    "december": "read 10 page book every day"
+    "december": None
 }
 
 
 def index(request):
     list_items = ""
     l_months = list(months.keys())
-    for month in l_months:
-        capitalized_month = month.capitalize()
-        month_path = reverse("monthly-challange", args=[month])
-        list_items += f"<li><a href= \"{month_path}\">{capitalized_month}</a></li>"
-    response_data = f"<ul>{list_items}</ul>"
-    return HttpResponse(response_data)
+
+    return render(request, "challenges/index.html",{
+        "months": l_months
+    })
 
 
 def monthly_challenge_by_number(request, month):
@@ -45,7 +44,11 @@ def mounthly_challenge(request, month):
 
     if month in months.keys():
         text_return = months[month]
-        response_data = f"<h1>{text_return}</h1>"
-        return HttpResponse(response_data)
+        return render(request, "challenges/challenge.html", {
+            "text": text_return,
+            "name_month": month
+
+        })
     else:
-        return HttpResponseNotFound("<h1>This month is not supported :(</h1>")
+        response_data = render_to_string("404.html")
+        return HttpResponseNotFound(response_data)
