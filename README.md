@@ -1,5 +1,5 @@
 # monthly_challenge
 
-<h1>
+<h2>
 monthly challenges with django
-</h1>
+</h2>
